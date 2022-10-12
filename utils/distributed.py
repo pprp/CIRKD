@@ -4,15 +4,17 @@ This is useful when doing distributed training.
 """
 import math
 import pickle
+
 import torch
-import torch.utils.data as data
 import torch.distributed as dist
+import torch.utils.data as data
+from torch.utils.data.sampler import BatchSampler, Sampler
 
-from torch.utils.data.sampler import Sampler, BatchSampler
-
-__all__ = ['get_world_size', 'get_rank', 'synchronize', 'is_main_process',
-           'all_gather', 'make_data_sampler', 'make_batch_data_sampler',
-           'reduce_dict', 'reduce_loss_dict']
+__all__ = [
+    'get_world_size', 'get_rank', 'synchronize', 'is_main_process',
+    'all_gather', 'make_data_sampler', 'make_batch_data_sampler',
+    'reduce_dict', 'reduce_loss_dict'
+]
 
 
 # reference: https://github.com/facebookresearch/maskrcnn-benchmark/blob/master/maskrcnn_benchmark/utils/comm.py
@@ -66,11 +68,11 @@ def all_gather(data):
     # serialized to a Tensor
     buffer = pickle.dumps(data)
     storage = torch.ByteStorage.from_buffer(buffer)
-    tensor = torch.ByteTensor(storage).to("cuda")
+    tensor = torch.ByteTensor(storage).to('cuda')
 
     # obtain Tensor size of each rank
-    local_size = torch.IntTensor([tensor.numel()]).to("cuda")
-    size_list = [torch.IntTensor([0]).to("cuda") for _ in range(world_size)]
+    local_size = torch.IntTensor([tensor.numel()]).to('cuda')
+    size_list = [torch.IntTensor([0]).to('cuda') for _ in range(world_size)]
     dist.all_gather(size_list, local_size)
     size_list = [int(size.item()) for size in size_list]
     max_size = max(size_list)
@@ -80,9 +82,9 @@ def all_gather(data):
     # gathering tensors of different shapes
     tensor_list = []
     for _ in size_list:
-        tensor_list.append(torch.ByteTensor(size=(max_size,)).to("cuda"))
+        tensor_list.append(torch.ByteTensor(size=(max_size, )).to('cuda'))
     if local_size != max_size:
-        padding = torch.ByteTensor(size=(max_size - local_size,)).to("cuda")
+        padding = torch.ByteTensor(size=(max_size - local_size, )).to('cuda')
         tensor = torch.cat((tensor, padding), dim=0)
     dist.all_gather(tensor_list, tensor)
 
@@ -158,10 +160,16 @@ def make_data_sampler(dataset, shuffle, distributed):
     return sampler
 
 
-def make_batch_data_sampler(sampler, images_per_batch, num_iters=None, start_iter=0):
-    batch_sampler = data.sampler.BatchSampler(sampler, images_per_batch, drop_last=False)
+def make_batch_data_sampler(sampler,
+                            images_per_batch,
+                            num_iters=None,
+                            start_iter=0):
+    batch_sampler = data.sampler.BatchSampler(sampler,
+                                              images_per_batch,
+                                              drop_last=False)
     if num_iters is not None:
-        batch_sampler = IterationBasedBatchSampler(batch_sampler, num_iters, start_iter)
+        batch_sampler = IterationBasedBatchSampler(batch_sampler, num_iters,
+                                                   start_iter)
     return batch_sampler
 
 
@@ -180,21 +188,23 @@ class DistributedSampler(Sampler):
             distributed training.
         rank (optional): Rank of the current process within num_replicas.
     """
-
     def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True):
         if num_replicas is None:
             if not dist.is_available():
-                raise RuntimeError("Requires distributed package to be available")
+                raise RuntimeError(
+                    'Requires distributed package to be available')
             num_replicas = dist.get_world_size()
         if rank is None:
             if not dist.is_available():
-                raise RuntimeError("Requires distributed package to be available")
+                raise RuntimeError(
+                    'Requires distributed package to be available')
             rank = dist.get_rank()
         self.dataset = dataset
         self.num_replicas = num_replicas
         self.rank = rank
         self.epoch = 0
-        self.num_samples = int(math.ceil(len(self.dataset) * 1.0 / self.num_replicas))
+        self.num_samples = int(
+            math.ceil(len(self.dataset) * 1.0 / self.num_replicas))
         self.total_size = self.num_samples * self.num_replicas
         self.shuffle = shuffle
 
@@ -208,12 +218,12 @@ class DistributedSampler(Sampler):
             indices = torch.arange(len(self.dataset)).tolist()
 
         # add extra samples to make it evenly divisible
-        indices += indices[: (self.total_size - len(indices))]
+        indices += indices[:(self.total_size - len(indices))]
         assert len(indices) == self.total_size
 
         # subsample
         offset = self.num_samples * self.rank
-        indices = indices[offset: offset + self.num_samples]
+        indices = indices[offset:offset + self.num_samples]
         assert len(indices) == self.num_samples
 
         return iter(indices)
@@ -230,7 +240,6 @@ class IterationBasedBatchSampler(BatchSampler):
     Wraps a BatchSampler, resampling from it until
     a specified number of iterations have been sampled
     """
-
     def __init__(self, batch_sampler, num_iterations, start_iter=0):
         self.batch_sampler = batch_sampler
         self.num_iterations = num_iterations
@@ -242,7 +251,7 @@ class IterationBasedBatchSampler(BatchSampler):
             # if the underlying sampler has a set_epoch method, like
             # DistributedSampler, used for making each process see
             # a different split of the dataset, then set it
-            if hasattr(self.batch_sampler.sampler, "set_epoch"):
+            if hasattr(self.batch_sampler.sampler, 'set_epoch'):
                 self.batch_sampler.sampler.set_epoch(iteration)
             for batch in self.batch_sampler:
                 iteration += 1

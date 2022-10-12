@@ -8,4 +8,3 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
     --save-dir [your directory path to store checkpoint files] \
     --log-dir [your directory path to store log files] \
     --pretrained-base [your pretrained-backbone path]/resnet18-imagenet.pth
-

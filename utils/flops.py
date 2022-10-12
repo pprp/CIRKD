@@ -1,13 +1,12 @@
-
+import math
+import operator
 import os
 import sys
 import time
-import math
-
-import operator
 from functools import reduce
-import torch.nn as nn
+
 import torch
+import torch.nn as nn
 import torch.nn.init as init
 
 
@@ -16,15 +15,17 @@ def cal_param_size(model):
 
 
 count_ops = 0
+
+
 def measure_layer(layer, x, multi_add=1):
     delta_ops = 0
     type_name = str(layer)[:str(layer).find('(')].strip()
 
     if type_name in ['Conv2d']:
-        out_h = int((x.size()[2] + 2 * layer.padding[0] - layer.kernel_size[0]) //
-                    layer.stride[0] + 1)
-        out_w = int((x.size()[3] + 2 * layer.padding[1] - layer.kernel_size[1]) //
-                    layer.stride[1] + 1)
+        out_h = int((x.size()[2] + 2 * layer.padding[0] -
+                     layer.kernel_size[0]) // layer.stride[0] + 1)
+        out_w = int((x.size()[3] + 2 * layer.padding[1] -
+                     layer.kernel_size[1]) // layer.stride[1] + 1)
         delta_ops = layer.in_channels * layer.out_channels * layer.kernel_size[0] *  \
                 layer.kernel_size[1] * out_h * out_w // layer.groups * multi_add
 
@@ -49,7 +50,7 @@ def should_measure(module):
     return False
 
 
-def cal_multi_adds(model, shape=(2,3,32,32)):
+def cal_multi_adds(model, shape=(2, 3, 32, 32)):
     global count_ops
     count_ops = 0
     data = torch.zeros(shape).cuda()
@@ -58,6 +59,7 @@ def cal_multi_adds(model, shape=(2,3,32,32)):
         def lambda_forward(x):
             measure_layer(m, x)
             return m.old_forward(x)
+
         return lambda_forward
 
     def modify_forward(model):
@@ -81,6 +83,3 @@ def cal_multi_adds(model, shape=(2,3,32,32)):
     restore_forward(model)
 
     return count_ops
-
-
-

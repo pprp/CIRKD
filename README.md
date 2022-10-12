@@ -18,9 +18,9 @@ PyTorch 1.8.0
 NCCL for CUDA 11.1
 
 Backbones pretrained on ImageNet:
-* [resnet101-imagenet.pth](https://drive.google.com/file/d/1V8-E4wm2VMsfnNiczSIDoSM7JJBMARkP/view?usp=sharing) 
-* [resnet18-imagenet.pth](https://drive.google.com/file/d/1_i0n3ZePtQuh66uQIftiSwN7QAUlFb8_/view?usp=sharing) 
-* [mobilenetv2-imagenet.pth](https://drive.google.com/file/d/12EDZjDSCuIpxPv-dkk1vrxA7ka0b0Yjv/view?usp=sharing) 
+* [resnet101-imagenet.pth](https://drive.google.com/file/d/1V8-E4wm2VMsfnNiczSIDoSM7JJBMARkP/view?usp=sharing)
+* [resnet18-imagenet.pth](https://drive.google.com/file/d/1_i0n3ZePtQuh66uQIftiSwN7QAUlFb8_/view?usp=sharing)
+* [mobilenetv2-imagenet.pth](https://drive.google.com/file/d/12EDZjDSCuIpxPv-dkk1vrxA7ka0b0Yjv/view?usp=sharing)
 
 ## Performance on Cityscapes
 
@@ -59,7 +59,7 @@ You can run [test_cityscapes.sh](https://github.com/winycg/CIRKD/tree/main/train
 You can zip the resulting images and submit it to the [Cityscapes test server](https://www.cityscapes-dataset.com/submit/).
 
 
-**Note**: The current codes have been reorganized and we have not tested them thoroughly. If you have any questions, please contact us without hesitation. 
+**Note**: The current codes have been reorganized and we have not tested them thoroughly. If you have any questions, please contact us without hesitation.
 
 
 ## Performance of Segmentation KD methods on Pascal VOC
@@ -99,6 +99,3 @@ The CamVid dataset for segmentation is available at [Baidu Drive](https://pan.ba
   year={2022}
 }
 ```
-
-
-

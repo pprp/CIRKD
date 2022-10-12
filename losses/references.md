@@ -14,4 +14,3 @@ dense prediction. ICCV-2021. => cwd.py
 [6] Double Similarity Distillation for Semantic Image Segmentation. TIP-2021. =>dsd.py
 
 [7] Cross-Image Relational Knowledge Distillation for Semantic Segmentation. CVPR-2022. => cirkd_mini_batch.py && cirkd_memory.py
-

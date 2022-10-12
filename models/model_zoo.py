@@ -1,9 +1,9 @@
 """Model store which handles pretrained models """
 
-from .pspnet import *
 from .deeplabv3 import *
 from .deeplabv3_mobile import *
 from .psp_mobile import *
+from .pspnet import *
 
 __all__ = ['get_segmentation_model']
 

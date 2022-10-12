@@ -1,5 +1,6 @@
 """Base Model for Semantic Segmentation"""
 import torch.nn as nn
+
 from .base_models.resnetv1b import *
 
 __all__ = ['SegBaseModel']
@@ -14,17 +15,31 @@ class SegBaseModel(nn.Module):
         Pre-trained dilated backbone network type (default:'resnet50'; 'resnet50',
         'resnet101' or 'resnet152').
     """
-
-    def __init__(self, nclass, aux, backbone='resnet50', local_rank=None, pretrained_base=True, **kwargs):
+    def __init__(self,
+                 nclass,
+                 aux,
+                 backbone='resnet50',
+                 local_rank=None,
+                 pretrained_base=True,
+                 **kwargs):
         super(SegBaseModel, self).__init__()
         self.aux = aux
         self.nclass = nclass
         if backbone == 'resnet18':
-            self.pretrained = resnet18_v1s(pretrained=pretrained_base, dilated=True, local_rank=local_rank, **kwargs)
+            self.pretrained = resnet18_v1s(pretrained=pretrained_base,
+                                           dilated=True,
+                                           local_rank=local_rank,
+                                           **kwargs)
         elif backbone == 'resnet50':
-            self.pretrained = resnet50_v1s(pretrained=pretrained_base, local_rank=local_rank, dilated=True, **kwargs)
+            self.pretrained = resnet50_v1s(pretrained=pretrained_base,
+                                           local_rank=local_rank,
+                                           dilated=True,
+                                           **kwargs)
         elif backbone == 'resnet101':
-            self.pretrained = resnet101_v1s(pretrained=pretrained_base, local_rank=local_rank, dilated=True, **kwargs)
+            self.pretrained = resnet101_v1s(pretrained=pretrained_base,
+                                            local_rank=local_rank,
+                                            dilated=True,
+                                            **kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
 
@@ -36,7 +51,7 @@ class SegBaseModel(nn.Module):
         x = self.pretrained.relu(x)
         x = self.pretrained.maxpool(x)
         '''
-        
+
         x = self.pretrained.conv1(x)
         x = self.pretrained.bn1(x)
         x = self.pretrained.relu1(x)
@@ -49,7 +64,7 @@ class SegBaseModel(nn.Module):
         x = self.pretrained.bn3(x)
         x = self.pretrained.relu3(x)
         x = self.pretrained.maxpool(x)
-        
+
         c1 = self.pretrained.layer1(x)
         c2 = self.pretrained.layer2(c1)
         c3 = self.pretrained.layer3(c2)
