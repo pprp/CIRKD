@@ -9,3 +9,4 @@ from .ifvd import *
 from .kd import *
 from .skd import *
 from .task import *
+from .autokd import *
