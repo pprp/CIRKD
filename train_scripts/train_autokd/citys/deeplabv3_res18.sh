@@ -14,5 +14,4 @@ CUDA_VISIBLE_DEVICES=0,1,2 \
     --teacher-pretrained ./data/deeplabv3_resnet101_citys_best_model.pth \
     --student-pretrained-base ./data/resnet18-imagenet.pth
 
-# baseline crikd q
-q
+# baseline crikd 74.21

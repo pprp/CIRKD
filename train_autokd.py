@@ -79,7 +79,7 @@ def parse_args():
                         help='Auxiliary loss')
     parser.add_argument('--batch-size',
                         type=int,
-                        default=8,
+                        default=16,
                         metavar='N',
                         help='input batch size for training (default: 8)')
     parser.add_argument('--start_epoch',
@@ -104,7 +104,7 @@ def parse_args():
                         help='momentum (default: 0.9)')
     parser.add_argument('--weight-decay',
                         type=float,
-                        default=1e-4,
+                        default=5e-4,
                         metavar='M',
                         help='w-decay (default: 5e-4)')
 

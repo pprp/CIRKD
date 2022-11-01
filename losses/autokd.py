@@ -257,6 +257,13 @@ class HintLoss(nn.Module):
 
 
 class CriterionAutoKD(nn.Module):
+    """_summary_
+    [1,2,4]: 74.135 
+    [1,2]: 73.90
+    [2,4]: 74.036
+    Args:
+        nn (_type_): _description_
+    """
     def __init__(self, ms=[1, 2, 4]):
         super(CriterionAutoKD, self).__init__()
         self.ms = ms
