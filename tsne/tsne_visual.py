@@ -59,6 +59,8 @@ np.save('tsne.npy', net1)
 
 net1 = np.load('tsne.npy')
 
+plt.figure(dpi=200)
+
 for i in range(len(target_value)):
     tmp_X1 = net1[net1_target == target_value[i]]
     plt.scatter(tmp_X1[:, 0],

@@ -44,11 +44,11 @@ def parse_args():
                         help='dataset name')
     parser.add_argument('--data',
                         type=str,
-                        default='./dataset/cityscapes/',
+                        default='/home/inspur/data/cityscapes',
                         help='dataset directory')
     parser.add_argument('--data-list',
                         type=str,
-                        default='./dataset/list/cityscapes/test.lst',
+                        default='/home/inspur/data/cityscapes/data-list.lst',
                         help='dataset directory')
     parser.add_argument('--workers',
                         '-j',
@@ -71,10 +71,10 @@ def parse_args():
     # checkpoint and log
     parser.add_argument('--pretrained',
                         type=str,
-                        default='psp_resnet18_citys_best_model.pth',
+                        default='/home/inspur/project/DIST_KD/segmentation/work_dirs/dist_dv3-r101_dv3_r18/kd_deeplabv3_resnet18_citys_best_model.pth',
                         help='pretrained seg model')
     parser.add_argument('--save-dir',
-                        default='../runs/logs/',
+                        default='./save_testresults/autokd_dist/',
                         help='Directory for saving predictions')
     parser.add_argument('--save-pred',
                         action='store_true',
@@ -280,8 +280,7 @@ if __name__ == '__main__':
         synchronize()
 
     # TODO: optim code
-    outdir = '{}_{}_{}_{}'.format(args.model, args.backbone, args.dataset,
-                                  args.method)
+    outdir = f'{args.model}_{args.backbone}_{args.dataset}_{args.method}'
     args.outdir = os.path.join(args.save_dir, outdir)
     if args.save_pred:
         if (args.distributed
