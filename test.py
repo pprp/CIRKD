@@ -23,6 +23,7 @@ from utils.distributed import (get_rank, make_batch_data_sampler,
                                make_data_sampler, synchronize)
 from utils.logger import setup_logger
 from utils.score import SegmentationMetric
+from utils.visualize import (cityscapes_palette, show_result_pyplot)
 
 
 def parse_args():
@@ -74,11 +75,12 @@ def parse_args():
                         default='/home/inspur/project/DIST_KD/segmentation/work_dirs/dist_dv3-r101_dv3_r18/kd_deeplabv3_resnet18_citys_best_model.pth',
                         help='pretrained seg model')
     parser.add_argument('--save-dir',
-                        default='./save_testresults/autokd_dist/',
+                        default='./save_testresults/autokd_dist_small_set/',
+                        type=str,
                         help='Directory for saving predictions')
     parser.add_argument('--save-pred',
                         action='store_true',
-                        default=False,
+                        default=True,
                         help='save predictions')
 
     # validation
@@ -212,7 +214,9 @@ class Evaluator(object):
             model = self.model
         logger.info('Start validation, Total sample: {:d}'.format(
             len(self.val_loader)))
-        for i, (image, target, filename) in enumerate(self.val_loader):
+        for i, (image, target, file_full_path) in enumerate(self.val_loader):
+            file_full_path = file_full_path[0]
+            filename = os.path.splitext(os.path.basename(file_full_path))[0]
             image = image.to(self.device)
             target = target.to(self.device)
 
@@ -251,7 +255,7 @@ class Evaluator(object):
                                            reverse=True)
 
                 predict = seg_pred.squeeze(0)
-                # mask = get_color_pallete(predict, self.args.dataset)
+                # mask = get_color_pallete(predict, 'citys')
                 mask = PILImage.fromarray(predict.astype('uint8'))
                 mask.save(
                     os.path.join(args.outdir,
@@ -259,6 +263,13 @@ class Evaluator(object):
                 print('Save mask to ' + os.path.splitext(filename[0])[0] +
                       '.png' + ' Successfully!')
 
+                # import pdb
+                # pdb.set_trace()                
+                file_path = file_full_path # f'{args.data}/leftImg8bit/test/bonn/{os.path.splitext(filename[0])[0]}.png'
+                show_result_pyplot(file_path, torch.argmax(full_probs, 1),
+                                   cityscapes_palette(), 
+                                   out_file=os.path.join(args.outdir, os.path.splitext(filename[0])[0] + '_mmseg.png'))
+                print('Save results to ' + os.path.splitext(filename[0])[0] + f'_mmseg_{args.method}.png' + ' Successfully!')
         synchronize()
 
 

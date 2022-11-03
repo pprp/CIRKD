@@ -275,7 +275,7 @@ class CSTestSet(data.Dataset):
         for item in self.img_ids:
             image_path = item[0]
             name = osp.splitext(osp.basename(image_path))[0]
-            img_file = osp.join(self.root, image_path)
+            img_file = osp.join(self.root, image_path[2:]) # ./
             self.files.append({'img': img_file})
 
         self.num_class = 19
@@ -287,7 +287,8 @@ class CSTestSet(data.Dataset):
         datafiles = self.files[index]
         image = cv2.imread(datafiles['img'], cv2.IMREAD_COLOR)
         size = image.shape
-        name = osp.splitext(osp.basename(datafiles['img']))[0]
+        # name = osp.splitext(osp.basename(datafiles['img']))[0]
+        name = datafiles['img']
         image = np.asarray(image, np.float32)
         image = image - np.array([104.00698793, 116.66876762, 122.67891434])
         image = image.transpose((2, 0, 1)).astype(np.float32)
